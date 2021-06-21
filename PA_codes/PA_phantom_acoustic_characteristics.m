@@ -19,6 +19,8 @@ if (mod(rows, 2) == 0) && (mod(cols, 2) == 0) %adjusting the phantom if not dime
     phantom_map(rows+1,1:cols) = phantom(rows,:);
     phantom_map(1:rows,cols+1) = phantom(:,cols);
     phantom_map(rows+1,cols+1) = phantom(rows,cols);
+    rows = rows + 1;
+    cols = cols + 1;
 end
 
 %% initializing sound speed and density maps
