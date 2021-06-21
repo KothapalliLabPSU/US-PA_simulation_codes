@@ -13,8 +13,8 @@ phantom = rgb2gray(imread('phantom_image.png')); % USER input
 
 map_x = zeros(1,cols+1);
 map_y = zeros(1,rows+1);
-map_x(1,:) = -(cols/20):0.1:(cols/20);
-map_y(1,:) = 0:0.1:(rows/10);
+map_x(1,:) = -(cols/20):0.1:(cols/20); % change division to floor division in the phantom if odd
+map_y(1,:) = 0:0.1:(rows/10); % change division to floor division in the phantom if odd
 map_y = fliplr(map_y);
 
 
@@ -30,13 +30,12 @@ for i = 1:length(mesh_spec.nodes)
     map_val = 32; % modify as necessary    
     
     if (map_val == 32) % background tissue, modify as necessary
-        mesh_back.region(i,1) = 1; % pick a region for each tissue type and stick with it, for ex: 4 tissue types = 4 regions
+        mesh_back.region(i,1) = 1; % regions are entirely optional, refer NIRFAST documentation for details
         mesh_back.sa(i,1) = 1.0; % scattering amplitude
         mesh_back.sp(i,1) = 1.0; % scattering power
         
-        % for the concentration, pick a column (1,2,3,4) for each tissue
-        % type, and stick with it. 
-        mesh_back.conc(i,1) = 0; % concentration of HbO %
+        % for the concentration, pick which column the tissue is in based on the order of the tissues in the .excoef and .param files - ex: (soft tissue being the 3rd tissue listed, its concentration values will be stored in the 3rd column)
+        mesh_back.conc(i,1) = 0; % concentration of HbO 
         mesh_back.conc(i,2) = 0; % concentration of prostate
         mesh_back.conc(i,3) = 1; % concentration of soft tissue
         mesh_back.conc(i,4) = 0; % concentration of bladder
@@ -53,7 +52,7 @@ save_mesh(mesh_back,'mesh_back');
 
 phantom_map = zeros([rows cols]);
 
-if (mod(rows, 2) == 0) && (mod(cols, 2) == 0) %adjusting the phantom if not properly dimensioned
+if (mod(rows, 2) == 0) && (mod(cols, 2) == 0) % adjusting the phantom if evenly dimensioned (ex: 600x600)
     phantom_map = zeros([rows+1, cols+1]);
     phantom_map(1:rows,1:cols) = phantom;
     phantom_map(rows+1,1:cols) = phantom(rows,:);
@@ -73,12 +72,11 @@ for i = 1:length(mesh_spec.nodes)
     map_val = prostate_map(row_ind,col_ind);
     
     if map_val == 255 %HbO
-        mesh_anom.region(i,1) = 1; % pick a region for each tissue type and stick with it, for ex: 4 tissue types = 4 regions
+        mesh_anom.region(i,1) = 1; % regions are entirely optional, refer NIRFAST documentation for details
         mesh_anom.sa(i,1) = 0.00001; % scattering amplitude 
         mesh_anom.sp(i,1) = 0.66; % scattering power
         
-        % for the concentration, pick a column (1,2,3,4) for each tissue
-        % type, and stick with it. 
+        % for the concentration, pick which column the tissue is in based on the order of the tissues in the .excoef and .param files - ex: (soft tissue being the 3rd tissue listed, its concentration values will be stored in the 3rd column)
         mesh_anom.conc(i,1) = 1;
         mesh_anom.conc(i,2) = 0;
         mesh_anom.conc(i,3) = 0;
