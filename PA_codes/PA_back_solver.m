@@ -55,6 +55,8 @@ for i = 1:n_wave
     sensor_data_temp1 = kspaceFirstOrder2D(kgrid, medium, source, sensor, input_args{:},'DataCast','gpuArray-single');% mimics propagation and records the pressures at the transducers defined in ln80
     sensor_data_temp1 = gather(sensor_data_temp1);
     save(strcat('sensor_data',num2str(wv_vect(i)),'.mat'),'sensor_data_temp1');
+    
+    % time reversal beamforming image
     sensor.time_reversal_boundary_data = sensor_data_temp1;
     PA_Image = kspaceFirstOrder2D(kgrid, medium, source, sensor, input_args{:},'DataCast','gpuArray-single');
     PA_Image = gather(PA_Image);
